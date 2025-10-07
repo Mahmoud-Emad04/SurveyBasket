@@ -1,12 +1,15 @@
+using SurveyBasket.Api;
+using SurveyBasket.Api.Persistence;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+//builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
+//	.AddEntityFrameworkStores<ApplicationDbContext>();
 
-builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-builder.Services.AddScoped<IPollService, PollService>();
+builder.Services.AddDependencies(builder.Configuration);
 
 var app = builder.Build();
 
@@ -20,6 +23,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+//app.MapIdentityApi<ApplicationUser>();
 
 app.MapControllers();
 
