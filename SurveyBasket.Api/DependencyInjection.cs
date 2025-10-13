@@ -16,6 +16,16 @@ public static class DependencyInjection
         IConfiguration configuration)
     {
         services.AddControllers();
+
+		services.AddCors(options =>
+			options.AddDefaultPolicy(builder =>
+				builder
+					.AllowAnyMethod()
+					.AllowAnyHeader()
+					.WithOrigins(configuration.GetSection("AllowedOrigins").Get<string[]>()!)
+			)
+		);
+
 		services.AddAuthConfig(configuration);
 
 		var connectionString = configuration.GetConnectionString("DefaultConnection") ??
@@ -30,6 +40,9 @@ public static class DependencyInjection
 
 		services.AddScoped<IAuthService, AuthService>();
 		services.AddScoped<IPollService, PollService>();
+
+		services.AddExceptionHandler<GlobalExceptionHandler>();
+		services.AddProblemDetails();
 
 		return services;
     }
