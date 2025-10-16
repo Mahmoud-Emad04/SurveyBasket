@@ -1,5 +1,5 @@
-using SurveyBasket.Api;
-using SurveyBasket.Api.Persistence;
+using SurveyBasket;
+
 
 var builder = WebApplication.CreateBuilder(args);
 

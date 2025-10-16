@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using SurveyBasket.Api.Authentication;
 using System.Security.Cryptography;
-namespace SurveyBasket.Api.Services;
+namespace SurveyBasket.Services;
 
 public class AuthService(UserManager<ApplicationUser> userManager, IJwtProvider jwtProvider) : IAuthService
 {

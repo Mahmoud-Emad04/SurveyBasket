@@ -1,4 +1,5 @@
-﻿namespace SurveyBasket.Api.Authentication;
+﻿
+namespace SurveyBasket.Authentication;
 
 public interface IJwtProvider
 {

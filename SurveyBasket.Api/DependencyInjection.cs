@@ -3,12 +3,10 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-using SurveyBasket.Api.Authentication;
-using SurveyBasket.Api.Persistence;
-using SurveyBasket.Authentication;
+using SurveyBasket.Persistence;
 using System.Text;
 
-namespace SurveyBasket.Api;
+namespace SurveyBasket;
 
 public static class DependencyInjection
 {
@@ -40,6 +38,9 @@ public static class DependencyInjection
 
 		services.AddScoped<IAuthService, AuthService>();
 		services.AddScoped<IPollService, PollService>();
+		services.AddScoped<IQuestionService, QuestionService>();
+		services.AddScoped<IVoteService, VoteService>();
+
 
 		services.AddExceptionHandler<GlobalExceptionHandler>();
 		services.AddProblemDetails();

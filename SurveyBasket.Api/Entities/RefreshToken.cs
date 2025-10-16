@@ -1,4 +1,4 @@
-﻿namespace SurveyBasket.Api.Entities
+﻿namespace SurveyBasket.Entities
 {
 	[Owned]
 	public class RefreshToken

@@ -1,5 +1,5 @@
 ﻿
-namespace SurveyBasket.Api.Persistence.EntitiesConfigurations;
+namespace SurveyBasket.Persistence.EntitiesConfigurations;
 
 public class UserConfiguration : IEntityTypeConfiguration<ApplicationUser>
 {

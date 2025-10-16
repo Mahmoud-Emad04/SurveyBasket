@@ -1,5 +1,5 @@
 ﻿
-namespace SurveyBasket.Api.Entities
+namespace SurveyBasket.Entities
 {
 	public class Poll :AuditableEntity
 	{
@@ -9,5 +9,6 @@ namespace SurveyBasket.Api.Entities
 		public bool IsPublished { get; set; }
 		public DateOnly StartsAt { get; set; }
 		public DateOnly EndsAt { get; set; }
+		public ICollection<Question> Questions { get; set; } = [];
 	}
 }

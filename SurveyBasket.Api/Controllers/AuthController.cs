@@ -1,4 +1,5 @@
-﻿namespace SurveyBasket.Api.Controllers;
+﻿
+namespace SurveyBasket.Controllers;
 
 [Route("[controller]")]
 [ApiController]

@@ -1,12 +1,11 @@
 ﻿
 
 using Microsoft.IdentityModel.Tokens;
-using SurveyBasket.Authentication;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace SurveyBasket.Api.Authentication;
+namespace SurveyBasket.Authentication;
 
 public class JwtProvider(IOptions<JwtOptions> options) : IJwtProvider
 {

@@ -1,6 +1,4 @@
 ﻿
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
 namespace SurveyBasket.Persistence.EntitiesConfigurations;
 
 public class PollConfiguration : IEntityTypeConfiguration<Poll>
