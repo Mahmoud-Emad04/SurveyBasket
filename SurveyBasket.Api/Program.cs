@@ -1,3 +1,4 @@
+using Serilog;
 using SurveyBasket;
 
 
@@ -11,6 +12,10 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddDependencies(builder.Configuration);
 
+builder.Host.UseSerilog((context, configuration) =>
+	configuration.ReadFrom.Configuration(context.Configuration)
+);
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -19,6 +24,8 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 	app.UseSwaggerUI(options=> options.SwaggerEndpoint("/openapi/v1.json","v1"));
 }
+
+app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();
 
