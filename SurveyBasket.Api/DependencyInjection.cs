@@ -14,6 +14,7 @@ public static class DependencyInjection
         IConfiguration configuration)
     {
         services.AddControllers();
+		services.AddHybridCache();
 
 		services.AddCors(options =>
 			options.AddDefaultPolicy(builder =>
