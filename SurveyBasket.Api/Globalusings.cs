@@ -13,9 +13,12 @@ global using Microsoft.EntityFrameworkCore.Metadata.Builders;
 global using Microsoft.Extensions.Options;
 global using SurveyBasket.Abstractions;
 global using SurveyBasket.Errors;
+global  using Microsoft.AspNetCore.Identity;
+global using SurveyBasket.Abstractions.Consts;
 
 global using SurveyBasket.Authentication;
-
+global using SurveyBasket.Extensions;
+global using SurveyBasket.Authentication.Filters;
 global using SurveyBasket.Persistence;
 global using SurveyBasket.Contracts.Authentication;
 global using SurveyBasket.Contracts.Polls;

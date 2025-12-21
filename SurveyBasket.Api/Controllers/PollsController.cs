@@ -4,20 +4,20 @@ namespace SurveyBasket.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize]
 public class PollsController(IPollService pollService) : ControllerBase
 {
 	private readonly IPollService _pollService = pollService;
 
 	[HttpGet("")]
+	[HasPermission(Permissions.GetPolls)]
 	public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
 	{
-
-
 		return Ok(await _pollService.GetAllAsync(cancellationToken));
 	}
 
 	[HttpGet("current")]
+	[Authorize(Roles = DefaultRoles.Member)]
+
 	public async Task<IActionResult> GetCurrent(CancellationToken cancellationToken)
 	{
 		return Ok(await _pollService.GetCurrentAsync(cancellationToken));

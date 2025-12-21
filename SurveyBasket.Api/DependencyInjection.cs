@@ -1,5 +1,6 @@
 ﻿
 
+using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -12,10 +13,10 @@ namespace SurveyBasket;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddDependencies(this IServiceCollection services,
-        IConfiguration configuration)
-    {
-        services.AddControllers();
+	public static IServiceCollection AddDependencies(this IServiceCollection services,
+		IConfiguration configuration)
+	{
+		services.AddControllers();
 		services.AddHybridCache();
 
 		services.AddCors(options =>
@@ -30,57 +31,64 @@ public static class DependencyInjection
 		services.AddAuthConfig(configuration);
 
 		var connectionString = configuration.GetConnectionString("DefaultConnection") ??
-            throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+			throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
-        services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(connectionString));
+		services.AddDbContext<ApplicationDbContext>(options =>
+			options.UseSqlServer(connectionString));
 
-        services
-            .AddMapsterConf()
-            .AddFluentValidationConf();
+		services
+			.AddMapsterConf()
+			.AddFluentValidationConf();
 
 		services.AddScoped<IAuthService, AuthService>();
 		services.AddScoped<IEmailSender, EmailService>();
+		services.AddScoped<INotificationService, NotificationService>();
 		services.AddScoped<IPollService, PollService>();
 		services.AddScoped<IQuestionService, QuestionService>();
 		services.AddScoped<IVoteService, VoteService>();
 		services.AddScoped<IResultService, ResultService>();
+		services.AddScoped<IRoleService, RoleService>();
+		services.AddScoped<IUserService, UserService>();
 
 
 		services.AddExceptionHandler<GlobalExceptionHandler>();
 		services.AddProblemDetails();
+		services.AddBackgroundJobsConfig(configuration);
 
 		services.Configure<MailSettings>(configuration.GetSection(nameof(MailSettings)));
 
 		return services;
-    }
+	}
 
-    private static IServiceCollection AddMapsterConf(this IServiceCollection services) 
-    {
-        var mappingConfig = TypeAdapterConfig.GlobalSettings;
-        mappingConfig.Scan(Assembly.GetExecutingAssembly());
+	private static IServiceCollection AddMapsterConf(this IServiceCollection services)
+	{
+		var mappingConfig = TypeAdapterConfig.GlobalSettings;
+		mappingConfig.Scan(Assembly.GetExecutingAssembly());
 
-        services.AddSingleton<IMapper>(new Mapper(mappingConfig));
+		services.AddSingleton<IMapper>(new Mapper(mappingConfig));
 
-        return services;
-    }
+		return services;
+	}
 
-    private static IServiceCollection AddFluentValidationConf(this IServiceCollection services)
-    {
-        services
-            .AddFluentValidationAutoValidation()
-            .AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+	private static IServiceCollection AddFluentValidationConf(this IServiceCollection services)
+	{
+		services
+			.AddFluentValidationAutoValidation()
+			.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
-        return services;
-    }
+		return services;
+	}
 
 	private static IServiceCollection AddAuthConfig(this IServiceCollection services, IConfiguration configuration)
 	{
 		services.AddSingleton<IJwtProvider, JwtProvider>();
 
-		services.AddIdentity<ApplicationUser, IdentityRole>()
+		services.AddIdentity<ApplicationUser, ApplicationRole>()
 		.AddEntityFrameworkStores<ApplicationDbContext>()
 		.AddDefaultTokenProviders();
+
+		services.AddTransient<IAuthorizationHandler, PermissionAuthorizationHandler>();
+		services.AddTransient<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
 
 		services.AddOptions<JwtOptions>()
 			.BindConfiguration(JwtOptions.SectionName)
@@ -115,6 +123,19 @@ public static class DependencyInjection
 			options.SignIn.RequireConfirmedEmail = true;
 			options.User.RequireUniqueEmail = true;
 		});
+
+		return services;
+	}
+	private static IServiceCollection AddBackgroundJobsConfig(this IServiceCollection services,
+	   IConfiguration configuration)
+	{
+		services.AddHangfire(config => config
+			.SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+			.UseSimpleAssemblyNameTypeSerializer()
+			.UseRecommendedSerializerSettings()
+			.UseSqlServerStorage(configuration.GetConnectionString("HangfireConnection")));
+
+		services.AddHangfireServer();
 
 		return services;
 	}
