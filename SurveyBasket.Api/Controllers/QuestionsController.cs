@@ -1,4 +1,5 @@
-﻿using SurveyBasket.Contracts.Questions;
+﻿using SurveyBasket.Contracts.Common;
+using SurveyBasket.Contracts.Questions;
 using SurveyBasket.Services;
 
 namespace SurveyBasket.Controllers;
@@ -11,14 +12,15 @@ public class QuestionsController(IQuestionService questionService) : ControllerB
     private readonly IQuestionService _questionService = questionService;
 
     [HttpGet("")]
-    public async Task<IActionResult> GetAll([FromRoute] int pollId, CancellationToken cancellationToken)
-    {
-        var result = await _questionService.GetAllAsync(pollId, cancellationToken);
+	public async Task<IActionResult> GetAll([FromRoute] int pollId, [FromQuery] RequestFilters filters, CancellationToken cancellationToken)
+	{
+		var result = await _questionService.GetAllAsync(pollId, filters, cancellationToken);
 
-        return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
-    }
+		return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
+	}
 
-    [HttpGet("{id}")]
+
+	[HttpGet("{id}")]
     public async Task<IActionResult> Get([FromRoute] int pollId, [FromRoute] int id, CancellationToken cancellationToken)
     {
         var result = await _questionService.GetAsync(pollId, id, cancellationToken);
