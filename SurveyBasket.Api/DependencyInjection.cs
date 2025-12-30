@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.IdentityModel.Tokens;
+using SurveyBasket.Health;
 using SurveyBasket.Persistence;
 using SurveyBasket.Settings;
 using System.Text;
@@ -56,6 +57,11 @@ public static class DependencyInjection
 		services.AddBackgroundJobsConfig(configuration);
 
 		services.Configure<MailSettings>(configuration.GetSection(nameof(MailSettings)));
+
+		services.AddHealthChecks()
+		   .AddSqlServer(name: "database", connectionString: configuration.GetConnectionString("DefaultConnection")!)
+		   .AddHangfire(options => { options.MinimumAvailableServers = 1; })
+		   .AddCheck<MailProviderHealthCheck>(name: "mail service");
 
 		return services;
 	}
