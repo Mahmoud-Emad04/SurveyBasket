@@ -1,0 +1,64 @@
+﻿using SurveyBasket.Contracts.Common;
+using SurveyBasket.Contracts.Questions;
+using SurveyBasket.Services;
+
+namespace SurveyBasket.Controllers;
+
+[Route("api/polls/{pollId}/[controller]")]
+[ApiController]
+[Authorize]
+public class QuestionsController(IQuestionService questionService) : ControllerBase
+{
+    private readonly IQuestionService _questionService = questionService;
+
+    [HttpGet("")]
+	public async Task<IActionResult> GetAll([FromRoute] int pollId, [FromQuery] RequestFilters filters, CancellationToken cancellationToken)
+	{
+		var result = await _questionService.GetAllAsync(pollId, filters, cancellationToken);
+
+		return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
+	}
+
+
+	[HttpGet("{id}")]
+    public async Task<IActionResult> Get([FromRoute] int pollId, [FromRoute] int id, CancellationToken cancellationToken)
+    {
+        var result = await _questionService.GetAsync(pollId, id, cancellationToken);
+
+        return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
+    }
+
+    [HttpPost("")]
+    public async Task<IActionResult> Add([FromRoute] int pollId, [FromBody] QuestionRequest request, CancellationToken cancellationToken)
+    {
+        var result = await _questionService.AddAsync(pollId, request, cancellationToken);
+
+        if (result.IsSuccess)
+            return CreatedAtAction(nameof(Get), new { pollId, result.Value.Id }, result.Value);
+
+        return result.Error.Equals(QuestionErrors.DuplicatedQuestionContent)
+                ? result.ToProblem()
+                : result.ToProblem();
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update([FromRoute] int pollId, [FromRoute] int id, [FromBody] QuestionRequest request, CancellationToken cancellationToken)
+    {
+        var result = await _questionService.UpdateAsync(pollId, id, request, cancellationToken);
+
+        if (result.IsSuccess)
+            return NoContent();
+
+        return result.Error.Equals(QuestionErrors.DuplicatedQuestionContent)
+                ? result.ToProblem()
+                : result.ToProblem();
+    }
+
+    [HttpPut("{id}/toggleStatus")]
+    public async Task<IActionResult> ToggleStatus([FromRoute] int pollId, [FromRoute] int id, CancellationToken cancellationToken)
+    {
+        var result = await _questionService.ToggleStatusAsync(pollId, id, cancellationToken);
+
+        return result.IsSuccess ? NoContent() : result.ToProblem();
+    }
+}
